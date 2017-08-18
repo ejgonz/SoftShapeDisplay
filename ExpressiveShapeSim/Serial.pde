@@ -6,7 +6,7 @@
  
   // Data sending variables
   // Display automatic refresh rate
-  int refreshRate = 80; //[ms]
+  int refreshRate = 8; //[ms]
   int sendCount;
   float sendRate;
 
@@ -53,7 +53,7 @@ void SendData() {
       }
       
       // print send rate
-      if (sendCount>0) println("Send Rate: " + (millis()-startSendTime)/sendCount + " ms");
+      if (sendCount>0) print("Send Rate: " + (millis()-startSendTime)/sendCount + " ms \r");
     }
    lastTimeSerial = currTime;
 }
@@ -108,18 +108,18 @@ void ZeroShapeDisplay() {
       // Check type
       String [] temp = split(f.getName(),'.');
       String fileType = temp[temp.length-1];
-      println(fileType);
+      //println(fileType);
       if (!fileType.equals("txt")) continue;
       
       // Import
       String [] lines = loadStrings(f.getAbsolutePath());
-      println("Loaded " +f.getName());
+      //println("Loaded " +f.getName());
       boolean emptyfile = false;
       
       // Read first line (SlaveID)
       int index = 0;
       String line = lines[index];
-      println("[Line " + index + "]: " + line);
+      //println("[Line " + index + "]: " + line);
       
       // Handle comments or newlines
       while (line.length() == 0 || line.charAt(0) == '#') {  
@@ -216,5 +216,5 @@ void printHeights() {
     if (pin.pinHeight == 0)
       countZeros++;
   }
-  println("zeros: " + countZeros);
+  //println("zeros: " + countZeros);
 }

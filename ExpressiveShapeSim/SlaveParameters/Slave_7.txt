@@ -1,7 +1,7 @@
 Slave: 7
 
 Disable, 5, 0
-
+#this pin encoder is broken
 
 # Command, pin, value
 # Keep all values <= 255

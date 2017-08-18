@@ -39,13 +39,26 @@ class Link {
     
     // Push/pull based on mass
     // heavier objects will be pushed/pulled less than attached light objects
-    p1.x += diffX * scalarP1 * difference;
-    p1.y += diffY * scalarP1 * difference;
-    p1.z += diffZ * scalarP1 * difference;
+      p1.x += diffX * scalarP1 * difference;
+      p1.y += diffY * scalarP1 * difference;
+      p1.z += diffZ * scalarP1 * difference;
     
-    p2.x -= diffX * scalarP2 * difference;
-    p2.y -= diffY * scalarP2 * difference;
-    p2.z -= diffZ * scalarP2 * difference;
+      p2.x -= diffX * scalarP2 * difference;
+      p2.y -= diffY * scalarP2 * difference;
+      p2.z -= diffZ * scalarP2 * difference;
+      
+      // Make sure position constraints are enforced
+      if (p1.edge || p1.pinned) {
+        p1.x = p1.pinX;
+        p1.y = p1.pinY;
+        p1.z = p1.pinZ;
+      }
+      
+      if (p2.edge || p2.pinned) {
+        p2.x = p2.pinX;
+        p2.y = p2.pinY;
+        p2.z = p2.pinZ;
+      }
   }
 
   // Draw if it's visible

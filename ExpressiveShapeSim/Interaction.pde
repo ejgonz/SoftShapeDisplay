@@ -8,6 +8,7 @@
 boolean alreadyPressed = false;
 int clickX, clickY;
 boolean mouseOffDisplay = true;
+boolean altDown;
 
 // Interaction variables
 float mouseInfluenceSize = 5;       // masses within this many pixels of the cursor will be targeted
@@ -28,6 +29,8 @@ void keyPressed() {
     toggleGravity();
   if (keyCode == SHIFT)
     shiftDown = true;
+  if (keyCode == CONTROL)
+    altDown = true;
   
   // Animation
   if (key == 'k' || key == 'K') {
@@ -86,6 +89,8 @@ void keyReleased() {
   if (keyCode == SHIFT) {
     shiftDown = false;
   }
+  if (keyCode == CONTROL)
+    altDown = false;
 }
 
 void mousePressed() {
@@ -151,59 +156,53 @@ void HandleArrowKeyMovement () {
   long thisTime = millis();
   
   // Move in -Y
-  if (keyPressed && keyCode == UP) {
-    // Move all pinned masses
-    for (PointMass p : pointmasses) {
-      if (p.pinned || p.edge)
-        p.pinY += -1*moveVelocity*(thisTime - lastTime);
-    }
-    
+  if (keyPressed && keyCode == UP){
     // Move all pins
     for (Pin pin : pins) {
       pin.pos.y += -1*moveVelocity*(thisTime - lastTime);
     }
+    // Move centroid
+    centroid.y += -1*moveVelocity*(thisTime - lastTime);
   }
   
   // Move in +Y
   if (keyPressed && keyCode == DOWN) {
-    // Move all pinned masses
-    for (PointMass p : pointmasses) {
-      if (p.pinned || p.edge)
-        p.pinY += moveVelocity*(thisTime - lastTime);
-    }
-    
     // Move all pins
     for (Pin pin : pins) {
       pin.pos.y += moveVelocity*(thisTime - lastTime);
     }
+    // Move centroid
+    centroid.y += moveVelocity*(thisTime - lastTime);
   }
   
   // Move in +X
   if (keyPressed && keyCode == RIGHT) {
-    // Move all pinned masses
-    for (PointMass p : pointmasses) {
-      if (p.pinned || p.edge)
-        p.pinX += moveVelocity*(thisTime - lastTime);
-    }
-    
     // Move all pins
     for (Pin pin : pins) {
       pin.pos.x += moveVelocity*(thisTime - lastTime);
     }
+    // Move centroid
+    centroid.x += moveVelocity*(thisTime - lastTime);
   }
   
   // Move in -X
   if (keyPressed && keyCode == LEFT) {
-    // Move all pinned masses
-    for (PointMass p : pointmasses) {
-      if (p.pinned || p.edge)
-        p.pinX += -1*moveVelocity*(thisTime - lastTime);
-    }
-    
     // Move all pins
     for (Pin pin : pins) {
       pin.pos.x += -1*moveVelocity*(thisTime - lastTime);
     }
+    // Move centroid
+    centroid.x += -1*moveVelocity*(thisTime - lastTime);
+  }
+  
+  // rotations
+  if (keyPressed && key == '1') {
+    // increase theta
+    theta++;
+  }
+  if (keyPressed && key == '2') {
+    // decrease theta
+    theta--;
   }
   
   lastTime = thisTime;

@@ -63,6 +63,7 @@ class Pin {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);                   // move to position
     translate(pinWidth/2, pinWidth/2, pinHeight/2);   // offset for center of box
+    translate(-centroid.x,-centroid.y);               // offset from centroid
     box(pinWidth,pinWidth,pinHeight);
     popMatrix();
   }

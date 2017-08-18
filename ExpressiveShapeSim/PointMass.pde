@@ -35,37 +35,39 @@ class PointMass {
   // The update function is used to update the physics of the PointMass.
   // motion is applied, and links are drawn here
   void updatePhysics(float timeStep) { // timeStep should be in elapsed seconds (deltaTime)
-    this.applyForce(0, 0, mass * gravity * gravityScale); 
-    
-    float velX = x - lastX;
-    float velY = y - lastY;
-    float velZ = z - lastZ;
-    
-    // dampen velocity
-    velX *= 0.99;
-    velY *= 0.99;
-    velZ *= 0.99;
-
-    float timeStepSq = timeStep * timeStep;
-    
-    damping = damp;
-    // calculate the next position using Verlet Integration
-    float nextX = x + velX*(1 - damping) + 0.5 * accX * timeStepSq;
-    float nextY = y + velY*(1 - damping) + 0.5 * accY * timeStepSq;
-    float nextZ = z + velZ*(1 - damping) + 0.5 * accZ * timeStepSq;
-    
-    // reset variables
-    lastX = x;
-    lastY = y;
-    lastZ = z;
-    
-    x = nextX;
-    y = nextY;
-    z = nextZ;
-    
-    accX = 0;
-    accY = 0;
-    accZ = 0;
+    if (!edge && !pinned) {
+      this.applyForce(0, 0, mass * gravity * gravityScale); 
+      
+      float velX = x - lastX;
+      float velY = y - lastY;
+      float velZ = z - lastZ;
+      
+      // dampen velocity
+      velX *= 0.99;
+      velY *= 0.99;
+      velZ *= 0.99;
+  
+      float timeStepSq = timeStep * timeStep;
+      
+      damping = damp;
+      // calculate the next position using Verlet Integration
+      float nextX = x + velX*(1 - damping) + 0.5 * accX * timeStepSq;
+      float nextY = y + velY*(1 - damping) + 0.5 * accY * timeStepSq;
+      float nextZ = z + velZ*(1 - damping) + 0.5 * accZ * timeStepSq;
+      
+      // reset variables
+      lastX = x;
+      lastY = y;
+      lastZ = z;
+      
+      x = nextX;
+      y = nextY;
+      z = nextZ;
+      
+      accX = 0;
+      accY = 0;
+      accZ = 0;
+    }
   }
   
   void updateInteractions() {
@@ -122,15 +124,15 @@ class PointMass {
     } 
     
     // Make sure point masses don't dip below the floor
-    if (z < 0) z = 0;
+    if (z < 0) {
+      z = 0;
+      pinZ = 0;
+    }
     
   }
   
   // attachTo can be used to create links between this PointMass and other PointMasss
   void attachTo(PointMass P, float restingDist, float stiff) {
-    attachTo(P, restingDist, stiff, true);
-  }
-  void attachTo(PointMass P, float restingDist, float stiff, float tearSensitivity) {
     attachTo(P, restingDist, stiff, true);
   }
   void attachTo(PointMass P, float restingDist, float stiff, boolean drawLink) {

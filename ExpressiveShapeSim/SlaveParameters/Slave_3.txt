@@ -1,7 +1,7 @@
-Slave: 25
+Slave: 3
 
 Disable, 5, 0
-
+# this pin gets stuck with the resistors
 
 # Command, pin, value
 # Keep all values <= 255

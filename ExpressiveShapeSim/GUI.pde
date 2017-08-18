@@ -69,6 +69,11 @@ void setupGUI() {
      .setSize(20,20)
      .setColorCaptionLabel(0)
      ;
+  cp5.addSlider("theta")
+     .setPosition(20,250)
+     .setRange(0,360)
+     .setColorCaptionLabel(0)
+     ;
   cp5.setAutoDraw(false);
 }
 

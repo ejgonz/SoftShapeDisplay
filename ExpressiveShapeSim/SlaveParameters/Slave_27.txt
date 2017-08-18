@@ -1,6 +1,6 @@
-Slave: 13
+Slave: 27
 
-Disable, 5, 0
+Disable, 1, 0
 
 
 # Command, pin, value

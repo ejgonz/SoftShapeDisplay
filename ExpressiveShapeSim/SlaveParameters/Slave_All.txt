@@ -6,6 +6,19 @@ LS, 2, 250
 LS, 3, 250
 LS, 4, 250
 LS, 5, 250
+maxspeed, 0, 255
+maxspeed, 1, 255
+maxspeed, 2, 255
+maxspeed, 3, 255
+maxspeed, 4, 255
+maxspeed, 5, 255
+minspeed, 0, 255
+minspeed, 1, 255
+minspeed, 2, 255
+minspeed, 3, 255
+minspeed, 4, 255
+minspeed, 5, 255
+
 
 # Command, pin, value
 # Keep all values <= 255
