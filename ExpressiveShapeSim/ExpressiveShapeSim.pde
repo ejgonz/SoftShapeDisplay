@@ -13,7 +13,7 @@
  * - serial data out to physical display                         [X]
  * - read and send setup slave files                             [X]
  * - Implement rotation of base using RotationMatrix             [X]
- * - implement communcation with unity                           [ ]
+ * - implement communcation with unity                           [X]
  * - import position and rotation from Vive                      [ ]
  * - paint stiffness with independent control                    [ ]
  * - implement linear animation controls                         [ ]
@@ -24,8 +24,10 @@
 import peasy.*;                // Camera
 import controlP5.*;            // GUI
 import processing.serial.*;    // Serial out
+import oscP5.*;                // OSC / Network
+import netP5.*;                // Network
 
-final boolean displayCentroid = true;
+boolean useUnity = true;
 
 // Where we'll store all of the points and pins
 ArrayList<PointMass> pointmasses;
@@ -49,8 +51,9 @@ final int yStart = 0; // where will the display start on the y axis?
 final float restingDistances = (pinWidth+pinSpacing)/densityScalar - 0.1;
 float stiffnesses = 0.5;
 float damp = 0.2;
-PVector centroid;             // center of rotation
+PVector centroid;             // center of rotation of mesh + pins
 float initTheta;              // Initial orientation (centroid to point (0,0))
+float initPinTheta;
 
 // Rotation Variables & Constants
 float theta = 0;    // Deg
@@ -60,6 +63,7 @@ final float DEG2RAD = (float) Math.PI/180.00;
 // Display
 boolean showPins = true;
 boolean showMesh = true;
+boolean displayCentroid = true;
 
 // GUI
 ControlP5 cp5;
@@ -75,8 +79,16 @@ Physics physics;
 Serial serialPort;
 long startSendTime;
 
+// Network
+OscP5 oscP5;
+NetAddress myRemoteLocation;
+
 void setup() {
+  // Network, for Unity communication
+  setupNetwork();
+  
   size(640,480, P3D);
+  frameRate(60);
   
   // Serial
   SetupSerial();
@@ -100,16 +112,15 @@ void setup() {
   createShapeDisplay();
   centroid = FindCentroid();
   initTheta = GetCurrentOrientation();
-  //DetermineOffsets();
+  initPinTheta = GetCurrentPinOrientation();
   
   // init keyframes
   keyFrames = new ArrayList<ArrayList<PointMass>>();
   
   // Set up slaves
   SetupSlaves();
-  
-  frameRate(120);
-  println("Initial Theta: " + initTheta);
+ 
+  //println("Initial Theta: " + initTheta);
 }
 
 void draw() {
@@ -121,7 +132,6 @@ void draw() {
     case EDITING:
       determineInteractionRegion();
       HandleArrowKeyMovement ();
-      //HandleRigidBodyRotation();  // maybe having a moving variable?
       AffineTransform();
       physics.update();
       break;
@@ -139,7 +149,7 @@ void draw() {
   SendData();
   
   //println("Current Orientation: " + Math.floor(GetCurrentOrientation()) +" Desired Theta: " + Math.floor((initTheta-theta)+360)%360);
-  //println("Delta: " + ((initTheta-theta) - GetCurrentOrientation()));
+  //println("Centroid x: " + centroid.x + " Centroid y: " + centroid.y + " theta: " + theta);
 }
 
 void UpdatePins() {
@@ -158,15 +168,15 @@ void updateGraphics() {
   
   if (showPins) {
     // Grey with black outline
-    pushMatrix();
-    translate(centroid.x,centroid.y);
-    rotateZ(-theta*DEG2RAD);              // QUICK FIX. NOT ROBUST. SHOULD USE ROTATION MATRICES, ETC.
+    //pushMatrix();
+    //translate(centroid.x,centroid.y);
+    //rotateZ(-theta*DEG2RAD);              // QUICK FIX. NOT ROBUST. SHOULD USE ROTATION MATRICES, ETC.
     stroke(100);
     fill(200); //fill(#f2f2f2);
     for (Pin pin : pins) {
       pin.draw();
     }
-    popMatrix();
+    //popMatrix();
     fill(0);
   }
   
@@ -219,7 +229,7 @@ void createShapeDisplay() {
   // Create pins
   for (int x = 0; x < dispWidthPins; x++) {
     for (int y = 0; y < dispLengthPins; y++) {
-      PVector pinpos = new PVector(x*(pinWidth + pinSpacing),y*(pinWidth + pinSpacing),0);
+      PVector pinpos = new PVector(x*(pinWidth + pinSpacing) + pinWidth/2, y*(pinWidth + pinSpacing) + pinWidth/2,0);
       Pin pin = new Pin(pinpos, pinWidth,10);
       pins.add(pin);
     }
@@ -243,6 +253,20 @@ PVector FindCentroid() {
   return new PVector(xSum/numEdges,ySum/numEdges);
 }
 
+// Find Centroid of shape display PINS
+//   Takes the average coordinate of the edge pointmasses
+PVector FindPinCentroid() {
+  int xSum = 0;
+  int ySum = 0;
+  int numEdges = 0;
+  for (Pin p : pins) {
+      xSum += p.pos.x;
+      ySum += p.pos.y;
+      numEdges++;
+  }
+  return new PVector(xSum/numEdges,ySum/numEdges);
+}
+
 // Returns current orientation of the display in deg, 
 // defined as the angle between +x axis and vector from centroid to corner pointmass initially at 0,0 
 // *(0,0)
@@ -253,6 +277,10 @@ PVector FindCentroid() {
 //    +y
 float GetCurrentOrientation() {
   return ( ((float) Math.atan2(pointmasses.get(0).y - centroid.y, pointmasses.get(0).x - centroid.x) * (1/DEG2RAD)) + 360) % 360;
+}
+
+float GetCurrentPinOrientation() {
+  return ( ((float) Math.atan2(pins.get(0).pos.y - centroid.y, pins.get(0).pos.x - centroid.x) * (1/DEG2RAD)) + 360) % 360;
 }
 
 /* Simple Helpers */

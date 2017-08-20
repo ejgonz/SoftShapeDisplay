@@ -45,14 +45,14 @@ class Pin {
   }
   
   boolean containedInX(PointMass p) {
-    if (p.x > pos.x && p.x < (pos.x + pinWidth)) {
+    if (p.x > (pos.x - pinWidth/2) && p.x < (pos.x + pinWidth/2)) {
       return true;
     }
     return false;
   }
   
   boolean containedInY(PointMass p) {
-    if (p.y > pos.y && p.y < (pos.y + pinWidth)) {
+    if (p.y > (pos.y - pinWidth/2) && p.y < (pos.y + pinWidth/2)) {
       return true;
     }
     return false;
@@ -62,8 +62,9 @@ class Pin {
   void draw (){
     pushMatrix();
     translate(pos.x, pos.y, pos.z);                   // move to position
-    translate(pinWidth/2, pinWidth/2, pinHeight/2);   // offset for center of box
-    translate(-centroid.x,-centroid.y);               // offset from centroid
+    translate(0, 0, pinHeight/2);   // offset for center of box
+    //translate(-centroid.x,-centroid.y);               // offset from centroid
+    rotateZ(-1*theta*DEG2RAD);
     box(pinWidth,pinWidth,pinHeight);
     popMatrix();
   }

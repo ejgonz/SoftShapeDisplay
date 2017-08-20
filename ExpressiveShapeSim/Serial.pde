@@ -53,7 +53,7 @@ void SendData() {
       }
       
       // print send rate
-      if (sendCount>0) print("Send Rate: " + (millis()-startSendTime)/sendCount + " ms \r");
+      //if (sendCount>0) print("Send Rate: " + (millis()-startSendTime)/sendCount + " ms \r");
     }
    lastTimeSerial = currTime;
 }
@@ -143,7 +143,7 @@ void ZeroShapeDisplay() {
       // Read command lines
       while (index < lines.length) {
         line = lines[index];
-        println("[Line " + index + "]: " + line);
+        //println("[Line " + index + "]: " + line);
         // Handle comments or new lines
         if (line.length() == 0 || line.charAt(0) == '#') { 
           index++;

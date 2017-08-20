@@ -20,17 +20,15 @@ void animateDisplay() {
       PointMass p = pointmasses.get(i);
       PointMass k = keyFrames.get(keyframe).get(i);
      // Update error
-     float diffX2 =  (p.x - k.x)*(p.x - k.x);
-     float diffY2 =  (p.y - k.y)*(p.y - k.y);
+     //float diffX2 =  (p.x - k.x)*(p.x - k.x);
+     //float diffY2 =  (p.y - k.y)*(p.y - k.y);
      float diffZ2 =  (p.z - k.z)*(p.z - k.z);
-     //float diffX2 = pointmasses.get(i).x;
-     //float diffY2 = pointmasses.get(i).y;
      totalError += (diffZ2);
      //println(totalError);
      
      // Interpolate
      //p.x = lerp(p.x, k.x, animationRate);
-     p.y = lerp(p.y, k.y, animationRate);
+     //p.y = lerp(p.y, k.y, animationRate);
      p.z = lerp(p.z, k.z, animationRate);
    }
    

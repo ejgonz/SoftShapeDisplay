@@ -2,12 +2,12 @@
  *  These funcitons handle the transformation of the mesh + pins. An affine transformation is used such that the display
  *  translates and rotates in the x-y plane (eventually according to position tracking of real world display)
  *  Author : Eric Gonzalez
- *  Date: Aug 11, 2017
+ *  Date: Aug 18, 2017
  */
 
 // Handles rotation of points about local centroid AND translation to ensure local centroid follows desired centroid location
 void AffineTransform() {
-  // We have the centroid coordinates already
+  // We have the centroid coordinates already! 
   
   // Generate 3 x n matrix for initial points
   // x0  ...  xn
@@ -34,8 +34,8 @@ void AffineTransform() {
   PVector translation2Centroid = new PVector(centroid.x - currCentroid.x, centroid.y - currCentroid.y);
   if ((centroid.y - currCentroid.y) < 1 & (centroid.y - currCentroid.y) > -1) translation2Centroid.y = 0;
   if ((centroid.x - currCentroid.x) < 1 & (centroid.x - currCentroid.x) > -1) translation2Centroid.x = 0;
-  println("Translation: " + translation2Centroid.x + " " + translation2Centroid.y);
-  Matrix T = CreateTranslationMatrix(translation2Centroid);
+  //println("Translation: " + translation2Centroid.x + " " + translation2Centroid.y);
+  Matrix T = CreateTranslationMatrix(translation2Centroid);    // This matrix is used to ensure the current centroid overlaps with global centroid variable
   
   // Create affine transformation matrix
   //Matrix M = CreateTranformationMatrix(deltaTheta, t1x, t1y);
@@ -49,10 +49,55 @@ void AffineTransform() {
   Matrix Y = (M.times(T)).times(X);
   
   // Update point mass locations
-    for (int i = 0; i < points.size(); i++) {
-      points.get(i).pinX = Y.get(0,i);
-      points.get(i).pinY = Y.get(1,i);
-    }
+  for (int i = 0; i < points.size(); i++) {
+    points.get(i).pinX = Y.get(0,i);
+    points.get(i).pinY = Y.get(1,i);
+  }
+    
+  /*        
+  
+   * * * * Repeat the same process for pins * * *
+   
+   */
+   
+  // Generate 3 x n matrix for initial pin positions
+  // x0  ...  xn
+  // y0  ...  yn
+  // 1   ...  1
+  Matrix P = new Matrix(3,pins.size());
+  n = 0;
+  for (Pin  pin : pins) {
+    P.set(0,n,pin.pos.x);
+    P.set(1,n,pin.pos.y);
+    P.set(2,n,1);
+    n++;
+  }
+  
+  // Find translation matrix
+  PVector currPinCentroid = FindPinCentroid();
+  PVector translation2PinCentroid = new PVector(centroid.x - currPinCentroid.x, centroid.y - currPinCentroid.y);
+  if ((centroid.y - currPinCentroid.y) < 1 & (centroid.y - currPinCentroid.y) > -1) translation2PinCentroid.y = 0;
+  if ((centroid.x - currPinCentroid.x) < 1 & (centroid.x - currPinCentroid.x) > -1) translation2PinCentroid.x = 0;
+  //println("Translation: " + translation2Centroid.x + " " + translation2Centroid.y);
+  Matrix T_P = CreateTranslationMatrix(translation2PinCentroid);    // This matrix is used to ensure the current centroid overlaps with global centroid variable
+  
+  // Create affine transformation matrix
+  //Matrix M = CreateTranformationMatrix(deltaTheta, t1x, t1y);
+  float deltaTheta_P = 0;
+  if (Math.floor(GetCurrentPinOrientation()) <= (((Math.floor(initPinTheta-theta) + 360) %360 ) - 1) ||  Math.floor(GetCurrentPinOrientation()) >= (((Math.floor(initPinTheta-theta) + 360) %360 ) + 1)){
+    deltaTheta_P = (initPinTheta-theta) - GetCurrentPinOrientation();
+    println("HERE");
+  }
+  Matrix M_P = CreateTranformationMatrix(deltaTheta_P*DEG2RAD, -centroid.x, -centroid.y);
+  
+  // Generate result
+  Matrix Y_P = (M_P.times(T_P)).times(P);
+  
+  // Update point mass locations
+  for (int i = 0; i < pins.size(); i++) {
+    pins.get(i).pos.x = Y_P.get(0,i);
+    pins.get(i).pos.y = Y_P.get(1,i);
+  }
 }
 
 // Creates 3 by 3 affine transformation matrix (rotation + translation)
