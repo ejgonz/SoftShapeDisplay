@@ -4,6 +4,8 @@ var RemoteIP : String = "127.0.0.1";
 var SendToPort : int = 57131;
 var ListenerPort : int = 57130;
 var target : GameObject;
+var positionScale : float = 1.0;
+var rotationOffset : float = 0;
 
 private var controller : Transform; 
 private var handler : Osc;
@@ -27,9 +29,9 @@ function FixedUpdate () {
 //		var r = 30.0;
 //
 		var data  = new Array();
-		data[0] = target.transform.position.x;
-		data[1] = target.transform.position.z;
-		data[2] = target.transform.rotation.y * RAD2DEG;
+		data[0] = target.transform.localPosition.x*positionScale;
+		data[1] = target.transform.localPosition.z*positionScale;
+		data[2] = target.transform.eulerAngles.y + rotationOffset;
 
 		var msg : OscMessage = new OscMessage();
 		msg.Address = "/viveData";

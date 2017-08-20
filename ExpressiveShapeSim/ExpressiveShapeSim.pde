@@ -17,7 +17,7 @@
  * - import position and rotation from Vive                      [ ]
  * - paint stiffness with independent control                    [ ]
  * - implement linear animation controls                         [ ]
- * - fix issue with rotations during animation                   [ ]
+ * - fix issue with rotations during animation                   [X]
  * - explore other forces beyond gravity                         [ ]
  */
 
@@ -28,6 +28,7 @@ import oscP5.*;                // OSC / Network
 import netP5.*;                // Network
 
 boolean useUnity = true;
+boolean useSerial = true;
 
 // Where we'll store all of the points and pins
 ArrayList<PointMass> pointmasses;
@@ -91,7 +92,7 @@ void setup() {
   frameRate(60);
   
   // Serial
-  SetupSerial();
+  if (useSerial) SetupSerial();
   
   // Camera control
   camera = new PeasyCam(this, 50, 50, 0, 180);
@@ -118,7 +119,7 @@ void setup() {
   keyFrames = new ArrayList<ArrayList<PointMass>>();
   
   // Set up slaves
-  SetupSlaves();
+  if (useSerial) SetupSlaves();
  
   //println("Initial Theta: " + initTheta);
 }
@@ -131,7 +132,7 @@ void draw() {
   switch (currentState) {
     case EDITING:
       determineInteractionRegion();
-      HandleArrowKeyMovement ();
+      if (!useUnity) HandleArrowKeyMovement ();
       AffineTransform();
       physics.update();
       break;
@@ -146,7 +147,7 @@ void draw() {
   UpdatePins();
   updateGraphics();
   
-  SendData();
+  if (useSerial) SendData();
   
   //println("Current Orientation: " + Math.floor(GetCurrentOrientation()) +" Desired Theta: " + Math.floor((initTheta-theta)+360)%360);
   //println("Centroid x: " + centroid.x + " Centroid y: " + centroid.y + " theta: " + theta);

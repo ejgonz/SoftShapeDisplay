@@ -19,7 +19,7 @@ void setupNetwork() {
 void oscEvent(OscMessage theOscMessage) {
   if (useUnity) {
     //println("### received an osc message with addrpattern "+theOscMessage.addrPattern()+" and typetag "+theOscMessage.typetag());
-    //theOscMessage.print();
+    theOscMessage.print();
     
     if (theOscMessage.checkAddrPattern("/viveData")) {
       float x = (float) theOscMessage.arguments()[0];
@@ -27,8 +27,8 @@ void oscEvent(OscMessage theOscMessage) {
       float rot = (float) theOscMessage.arguments()[2];
       
       // Assign values
-      centroid.x = y*2;
-      centroid.y = x*2;
+      centroid.x = x*2;
+      centroid.y = y*2;
       theta = -1*rot;
     }
   }

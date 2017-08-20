@@ -6,7 +6,7 @@
  
   // Data sending variables
   // Display automatic refresh rate
-  int refreshRate = 8; //[ms]
+  int refreshRate = 20; //[ms]
   int sendCount;
   float sendRate;
 
@@ -36,8 +36,8 @@
 void SetupSerial() {
   println("Available Serial Ports");
   printArray(Serial.list());
-  serialPort = new Serial(this,Serial.list()[1],115200);
-  println("Selected: " + Serial.list()[1]);
+  serialPort = new Serial(this,Serial.list()[0],115200);
+  println("Selected: " + Serial.list()[0]);
 }
 
 // Send
